@@ -56,7 +56,7 @@ To satisfy institutional reporting requirements, the project integrates four dis
 | Role | Responsibility | Primary Tools |
 | :--- | :--- | :--- |
 | Xinghan Chen | GPU Pipeline, Advanced ML, XAI, IEEE Methodology | NVIDIA RAPIDS, XGBoost, SHAP |
-| **Member** | BI Suite, Self-Taught Tool, Dashboard Integration | Power BI, Streamlit, Tableau |
+| Xinghan Chen | BI Suite, Self-Taught Tool, Dashboard Integration | Power BI, Streamlit, Tableau |
 | **Member** | *Task Assignment: IEEE Synthesis & Slides (Pending)* | Google Docs, GitHub |
 
 ---
