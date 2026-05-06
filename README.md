@@ -4,67 +4,58 @@
 
 # Scalable Predictive Analytics of Student Burnout: A GPU-Accelerated Study of 1M Records
 
-## Project Overview
-This project presents a production-ready analytics pipeline designed to identify mental health risks within a massive "Digital Twin" student population of **1,000,000 records**. By leveraging **NVIDIA RAPIDS** and **XGBoost 2.0**, we successfully bridged the gap between big data engineering and explainable AI, providing actionable decision support for academic institutions.
+## 🎓 Project Overview
+This project presents a high-performance analytics pipeline designed to identify mental health risks within a massive student population of **1,000,000 records**. By leveraging **NVIDIA RAPIDS (cuDF)** and **XGBoost 2.0**, we successfully bridged the gap between big data engineering and **Explainable AI (XAI)**, providing actionable decision support for academic institutions.
 
-### Technical Core (Lead Contribution)
-- **Scale:** High-fidelity processing of 1,000,000 rows x 20 features.
-- **Hardware Acceleration:** Implemented a GPU-based pipeline using **cuDF** and **XGBoost (CUDA)**, achieving a **[Insert your speedup, e.g., 20.5x] speedup** over traditional CPU-based Pandas.
-- **Explainable AI (XAI):** Integrated **SHAP (SHapley Additive exPlanations)** to transform a "black-box" model into a transparent decision-support tool.
-
----
-
-## 📂 Data Management & Scalability
-Due to the significant scale of the serialized output (**~300MB CSV**), we implemented a multi-tier data management strategy to comply with GitHub's 100MB file limit while ensuring reproducibility:
-
-1.  **Full Analytic Dataset (1,000,000 Records):** Hosted on **Google Drive** for seamless integration with Power BI and Streamlit. [Access Full Dataset Here](插入你的Google_Drive链接)
-2.  **GitHub Preview Subset (`Burnout_Predictions_Preview_50k.csv`):** A statistically representative 5% sample provided in this repository for code verification and structure review.
-3.  **Serialized Features:** Used **Apache Parquet** format for internal data reconstitution to preserve metadata and optimize I/O performance.
+### 🚀 Key Technical Achievements (Project Lead)
+- **Extreme Scale:** High-fidelity processing of 1,000,000 rows across 20+ features.
+- **Hardware Acceleration:** Implemented a GPU-based pipeline achieving a measured **21.67x throughput gain** over CPU-based Pandas.
+- **Explainable AI:** Integrated **SHAP (SHapley Additive exPlanations)** to transform a "black-box" model into a transparent decision-support tool.
+- **Tool Diversity:** Integrated 4 distinct platforms (Plotly, Tableau, Power BI, Streamlit) to satisfy institutional reporting needs.
 
 ---
 
-## Project Architecture
+## 🛠️ Repository Architecture
+The repository is structured into modular tasks to ensure technical consistency and scalability:
 
-### Phase 1: Data Engineering (`Task_1_Data_Engineering.ipynb`)
-- **GPU Preprocessing:** Automated cleaning and standardization using `cuDF`.
-- **Feature Engineering:** Developed 8 domain-specific interaction metrics (e.g., *Academic Resilience Ratio*, *Effort-Reward Disparity*) to capture non-linear burnout triggers.
-- **Benchmarking:** Explicit performance comparison between CPU and GPU latencies.
+### [Task 1: GPU Data Engineering](https://github.com/xinghanchen-xc/DATA230-Final-Group-Project/tree/main/Task%201%20-%20GPU%20Data%20Engineering)
+- **NVIDIA RAPIDS Pipeline:** Automated cleaning, standardization, and benchmarking.
+- **Feature Engineering:** Developed 8 interaction metrics (e.g., *Academic Resilience Ratio*) to capture non-linear burnout triggers.
 
-### Phase 2: Predictive Modeling & XAI (`Task_2_ML_Interpretability.ipynb`)
-- **XGBoost 2.0:** Implemented stochastic gradient boosting with `tree_method='hist'` and `device='cuda'`.
-- **Interpretability:** Generated **SHAP Summary Plots** to quantify feature impact, identifying **Financial Stress** and **Sleep Hygiene** as the primary drivers of student risk.
+### [Task 2: Advanced ML & Interpretability](https://github.com/xinghanchen-xc/DATA230-Final-Group-Project/tree/main/Task%202%20-%20ML%20%26%20Interpretability)
+- **XGBoost 2.0 Optimization:** Hardware-accelerated training using the `hist` tree method and `cuda` device mapping.
+- **XAI Suite:** Generated **SHAP Beeswarm Plots** to quantify directional feature impact.
+- **Diagnostics:** Comprehensive monitoring via multi-logloss and classification error curves.
 
----
+### [Task 3: Visual Analytics (Power BI)](https://github.com/xinghanchen-xc/DATA230-Final-Group-Project/tree/main/Task%203%20-%20Visual%20Analytics%20PowerBI)
+- **Executive Suite:** Macro-level distribution and stressor intensity analysis.
+- **Predictive Dashboard:** Integrated ML outputs featuring a high-fidelity **Confusion Matrix** and **Performance Cliff** analysis.
 
-## Multi-Tool Visualization Suite
-To satisfy institutional reporting requirements, the project integrates four distinct visualization platforms:
-1.  **Plotly:** High-density EDA and statistical distribution analysis.
-2.  **Tableau:** Multivariate behavioral interaction mapping.
-3.  **Power BI:** Executive-level predictive reporting (Actual vs. Predicted).
-4.  **Streamlit:** A self-taught web application for real-time risk assessment and SHAP-based local explanations.
-
----
-
-## Preliminary ML Direction
-- **Task:** Multi-Class Classification (Predicting Low, Medium, High risk).
-- **Justification:** EDA revealed a **"Performance Cliff"** at a stress threshold of 8/10, indicating a non-linear relationship that necessitates ensemble-based learning over simple regression.
-- **Ethics & Privacy:** Treated the synthetic dataset as a **Scalable Stress-Test Sandbox**, ensuring the pipeline is "Privacy-by-Design" and ready for de-identified real-world deployment.
+### [Task 4: Self-Taught Tool (Streamlit)](https://github.com/xinghanchen-xc/DATA230-Final-Group-Project/tree/main/Task%204%20-%20Streamlit%20Self-Taught%20Tool)
+- **Real-time Simulator:** A Python-based web app for clinical risk triaging.
+- **Decision Support:** Provides evidence-based reasoning and intervention strategies based on real-time user inputs.
 
 ---
 
-## Team Contribution Matrix
-| Role | Responsibility | Primary Tools |
-| :--- | :--- | :--- |
-| Xinghan Chen | GPU Pipeline, Advanced ML, XAI, IEEE Methodology | NVIDIA RAPIDS, XGBoost, SHAP |
-| Xinghan Chen | BI Suite, Self-Taught Tool, Dashboard Integration | Power BI, Streamlit, Tableau |
-| **Member** | *Task Assignment: IEEE Synthesis & Slides (Pending)* | Google Docs, GitHub |
+## 📂 Data Management & Reproducibility
+- **Dataset:** Sourced via `kagglehub` API (1M Records).
+- **GitHub Preview:** Due to size limits (>300MB), a statistically representative 5% sample (`Burnout_Predictions_Preview_50k.csv`) is hosted here. 
+- **Cloud Storage:** The full analytic dataset is maintained on **Google Drive** for Power BI integration.
 
 ---
 
-## Execution Instructions
-1.  Open Google Colab and enable a **T4 GPU** runtime.
-2.  Run `Task_1_Data_Engineering.ipynb` to download and preprocess the Kaggle dataset.
-3.  Run `Task_2_ML_Interpretability.ipynb` to train the model and generate interpretability artifacts.
-4.  Access the `Final_Predictions_for_Dashboard.csv` for BI visualization.
+## 👥 Accountability & Collaboration Proof
+As per the Professor's requirement for "Collaboration Proof," this repository maintains a full audit log of all technical contributions:
+- **Xinghan Chen (Technical Architect)**: Responsible for the end-to-end architecture of Tasks 1, 2, 3, and 4. This includes the development of the GPU-accelerated pipeline, the implementation of the core Machine Learning logic (XGBoost 2.0 & SHAP), and the structural design of the visualization suite.
+- **Abhijith Reddy (Technical Assistant)**: Assisted with Machine Learning diagnostic tasks, while also providing support in dashboard refinement and final technical reporting.
+- **Sanjana Reddy (Communications & Documentation Lead)**: Responsible for the synthesis of the final IEEE Technical Report and the creation of the presentation materials.
 
 ---
+
+## ⚙️ How to Run
+1. Open Google Colab with a **T4 GPU** runtime.
+2. Execute `Task_1_Data_Engineering.ipynb` for data acquisition and preprocessing.
+3. Execute `Task_2_ML_Interpretability.ipynb` for model training and SHAP analysis.
+4. Run `streamlit run Task_4_.../app.py` to launch the local simulator.
+
+*Developed for **DATA-230: Data Visualization** at **San José State University (SJSU)**.*
