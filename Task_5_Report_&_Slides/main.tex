@@ -1,0 +1,349 @@
+\documentclass[conference]{IEEEtran}
+
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{url}
+\usepackage{cite}
+\usepackage{float}
+
+\title{Scalable Predictive Analytics of Student Burnout: A GPU-Accelerated Explainable AI Study of One Million Records}
+
+\author{
+\IEEEauthorblockN{Sanjana Reddy Katham, Xinghan Chen, Abhijith Reddy}
+\IEEEauthorblockA{
+Data Intelligence and Visualization\\
+San Jose State University\\
+Email: sanjanareddy.katham@sjsu.edu, xinghan.chen@sjsu.edu, abhijithreddy.barre@sjsu.edu
+}
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Student burnout has become an important concern in academic environments, especially as institutions seek data-driven methods to identify at-risk students before severe academic or mental-health decline occurs. This project develops a scalable predictive analytics pipeline for student burnout risk analysis using a public Kaggle dataset~\cite{kaggle_student_burnout} containing 1,000,000 student records and more than 20 demographic, academic, behavioral, and psychological features. The system combines GPU-accelerated data engineering using NVIDIA RAPIDS cuDF~\cite{nvidia_rapids}, predictive modeling using XGBoost, explainable artificial intelligence using SHAP, and multi-tool dashboard development using Tableau, Plotly, Power BI, and Streamlit. The data engineering pipeline achieved a 21.67x speedup compared with CPU-based Pandas preprocessing. Eight domain-specific interaction features were engineered to capture non-linear burnout patterns, including academic resilience, study-sleep imbalance, socio-economic stress, and combined psychological distress. A GPU-accelerated XGBoost classifier was trained to predict low, medium, and high burnout-risk categories. Model diagnostics, classification results, feature-importance analysis, and SHAP explanations were used to evaluate model behavior and identify major burnout drivers. The results indicate that financial stress, sleep imbalance, academic resilience, and exam pressure are important predictors of burnout risk. Interactive dashboards further translate model outputs into actionable decision-support tools for institutional monitoring and student intervention planning.
+\end{abstract}
+
+\begin{IEEEkeywords}
+student burnout, GPU analytics, NVIDIA RAPIDS, XGBoost, SHAP, explainable AI, Power BI, Streamlit, Tableau, data visualization
+\end{IEEEkeywords}
+
+\section{Introduction}
+
+Student burnout is a growing academic and mental-health concern caused by sustained exposure to stressors such as exam pressure, sleep deprivation, financial strain, academic workload, and limited social support. In university environments, burnout can affect academic performance, retention, well-being, and long-term student success. Traditional approaches to identifying burnout often rely on surveys, small samples, or retrospective reporting. These methods may fail to support early intervention at population scale.
+
+This project addresses the problem by developing a scalable, explainable, and visualization-driven analytics system for predicting student burnout risk. Using a public student mental-health and burnout dataset containing 1,000,000 records, our goal was to identify the major behavioral and socio-economic drivers of burnout and convert predictive results into interpretable dashboards for decision support.
+
+The project was completed across two phases. During the midterm phase, the team focused on exploratory data analysis and dashboard-based insight discovery using Plotly and Tableau. These dashboards helped identify early patterns such as the relationship between study hours, sleep hours, physical activity, stress level, and burnout score. During the final phase, the project evolved into a full predictive analytics system using GPU-accelerated preprocessing, engineered interaction features, XGBoost classification, SHAP explainability, Power BI executive reporting, and a Streamlit real-time burnout simulator.
+
+The main contributions of this project are:
+\begin{itemize}
+    \item A GPU-accelerated data engineering pipeline for processing 1,000,000 student records using NVIDIA RAPIDS cuDF.
+    \item Eight engineered interaction features designed to capture non-linear burnout risk factors.
+    \item A multi-class XGBoost model for predicting low, medium, and high burnout-risk categories.
+    \item SHAP-based explainability analysis to identify major predictive drivers.
+    \item Four visualization platforms across the project lifecycle: Plotly, Tableau, Power BI, and Streamlit.
+    \item Interactive dashboard systems that support both executive-level monitoring and individual student risk simulation.
+\end{itemize}
+
+\section{Dataset and Data Processing}
+
+The dataset used in this study is the \textit{Student Mental Health and Burnout} dataset obtained from Kaggle. It contains approximately 1,000,000 student records with over 20 features capturing demographic, academic, behavioral, and psychological attributes. These include variables such as study hours, sleep duration, exam pressure, financial stress, anxiety score, depression score, social support, and academic performance.
+
+The dataset was selected due to its large scale, multi-dimensional structure, and relevance to real-world mental health analytics. Its size and feature richness make it suitable for both exploratory data analysis (EDA) and predictive modeling, while also requiring non-trivial preprocessing and computational efficiency considerations.
+
+\subsection{GPU-Accelerated Data Engineering}
+
+To address scalability challenges, the data preprocessing pipeline was implemented using NVIDIA RAPIDS cuDF, enabling GPU-accelerated data manipulation. A direct benchmark comparison between CPU-based Pandas and GPU-based cuDF showed a significant performance improvement:
+
+\begin{itemize}
+    \item CPU (Pandas) processing time: 4.94 seconds
+    \item GPU (cuDF) processing time: 0.23 seconds
+    \item Achieved speedup: 21.67x
+\end{itemize}
+
+This acceleration allowed efficient handling of the full 1,000,000-row dataset without the need for aggressive sampling during preprocessing.
+
+\subsection{Data Cleaning and Transformation}
+
+Data cleaning included:
+\begin{itemize}
+    \item Standardization of column names
+    \item Handling of potential missing values
+    \item Outlier mitigation using statistical normalization techniques
+\end{itemize}
+
+Additionally, domain-informed feature engineering was performed to capture complex interactions between variables.
+
+\subsection{Feature Engineering}
+
+Eight interaction-based features were constructed to model non-linear burnout dynamics:
+
+\begin{itemize}
+    \item Academic Resilience = exam pressure / (sleep hours + 1)
+    \item Study-Sleep Gap = study hours per day – sleep hours
+    \item Socio-Economic Multiplier = financial stress $\times$ exam pressure
+    \item Effort-Reward Index = study hours / academic performance
+    \item Total Cognitive Load = study hours + screen time
+    \item Anxiety-Pressure Impact = anxiety score $\times$ exam pressure
+    \item Social Support Ratio = social support / (family expectation + 1)
+    \item Combined Distress Index = depression score + anxiety score
+\end{itemize}
+
+These engineered features were critical in improving model performance and capturing hidden relationships that are not directly observable from raw variables.
+
+The processed dataset was serialized in Apache Parquet format to optimize storage efficiency and enable seamless integration with downstream machine learning and visualization components.
+
+\section{Exploratory Data Analysis}
+
+Exploratory Data Analysis (EDA) was conducted to understand the underlying structure of the dataset and identify key factors contributing to student burnout. The analysis was performed using GPU-accelerated computation (cuDF) and visualized through Plotly and Tableau dashboards.
+
+\subsection{Behavioral Interaction Analysis}
+
+Exploratory analysis using Plotly-based visualizations revealed key behavioral relationships between study habits, sleep patterns, and burnout outcomes. The results indicate that burnout risk increases with higher study hours, particularly when accompanied by reduced sleep duration.
+
+Additionally, combined behavioral factors such as sleep deprivation and sustained academic pressure were found to contribute significantly to elevated burnout levels. These patterns highlight the importance of considering interaction effects rather than isolated variables.
+
+\subsection{Key Insights from EDA}
+
+Several important patterns were identified:
+
+\begin{itemize}
+    \item \textbf{Non-linear burnout threshold:} Burnout levels remain relatively stable until stress levels reach a critical threshold (approximately 8/10), after which burnout increases sharply.
+    \item \textbf{Sleep deprivation impact:} Reduced sleep duration strongly correlates with increased burnout and reduced academic resilience.
+    \item \textbf{Financial stress persistence:} Financial stress remains consistently high across medium and high burnout groups, indicating it as a persistent underlying factor.
+    \item \textbf{Interaction effects:} Burnout is not driven by single variables, but by combinations such as study hours, sleep imbalance, and psychological distress.
+\end{itemize}
+
+These insights directly informed the choice of a non-linear machine learning model (XGBoost), as linear models would be insufficient to capture the complex interactions observed in the data.
+
+\section{Machine Learning Methods and Results}
+
+\subsection{Model Selection and Rationale}
+
+Based on the insights obtained from exploratory data analysis, the problem was formulated as a multi-class classification task to predict student burnout risk levels (Low, Medium, High). The presence of non-linear relationships and interaction effects between features motivated the use of a tree-based ensemble model.
+
+XGBoost was selected due to its scalability~\cite{xgboost}, ability to model non-linear interactions, and compatibility with GPU acceleration. The model was implemented using the \texttt{hist} tree method with CUDA-based computation to ensure efficient training on large-scale data.
+
+\subsection{Model Training and Configuration}
+
+The data set was divided into training and testing sets using an 80-20 ratio. Only numerical features were retained for model training, including original and engineered features. To ensure the validity of the model, potential data leakage features, such as burnout score, mental health index, and prediction-derived fields, were explicitly excluded from the training. This prevents artificially inflated performance and ensures that predictions are based only on independent input variables.
+
+The model was configured with the following parameters:
+\begin{itemize}
+    \item Number of estimators: 200
+    \item Learning rate: 0.05
+    \item Maximum depth: 6
+    \item Subsample ratio: 0.8
+    \item Column sample ratio: 0.8
+\end{itemize}
+
+These parameters were selected to balance model complexity and generalization performance.
+
+\subsection{Model Performance Evaluation}
+
+The trained model achieved near-perfect classification performance across all three burnout risk categories. Evaluation metrics including precision, recall, and F1-score were consistently high across the test dataset.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{figures/model_diagnostics.png}
+\caption{Model diagnostic curves illustrating training performance and convergence behavior.}
+\label{fig:model_diagnostics}
+\end{figure}
+
+Figure~\ref{fig:model_diagnostics} shows the model training diagnostics, including loss and error trends. The curves indicate stable convergence and effective learning behavior without significant overfitting.
+
+While the model achieved extremely high accuracy, it is important to note that the dataset may contain strong feature-target relationships or synthetic patterns, which can lead to unusually high predictive performance. This suggests that additional validation on real-world datasets would be necessary to confirm generalizability.
+
+\subsection{Classification Performance Analysis}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{figures/confusion_matrix.jpeg}
+\caption{Confusion matrix showing classification performance across Low, Medium, and High burnout risk categories.}
+\label{fig:confusion_matrix}
+\end{figure}
+
+Figure~\ref{fig:confusion_matrix} shows that most predictions are concentrated along the diagonal, indicating strong classification performance. The model performs especially well for the Low-risk class, while remaining misclassifications mainly occur between adjacent risk levels.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{figures/roc_curves.jpeg}
+\caption{One-vs-rest ROC curves for multi-class burnout classification.}
+\label{fig:roc_curves}
+\end{figure}
+
+Figure~\ref{fig:roc_curves} shows that the ROC curves are well above the random baseline, demonstrating strong separability among the burnout risk classes.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{figures/precision_recall.jpeg}
+\caption{Precision-recall curves showing model performance under class imbalance.}
+\label{fig:precision_recall}
+\end{figure}
+
+Figure~\ref{fig:precision_recall} evaluates model behavior under class imbalance. This is important because high-risk students represent a smaller group but are the most important population for early intervention.
+
+\subsection{Model Explainability using SHAP}
+
+To interpret the model's predictions, SHapley Additive exPlanations (SHAP)~\cite{shap} were used. SHAP provides a consistent framework for understanding feature contributions to model output.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{figures/shap_highrisk_beeswarm.png}
+\caption{SHAP beeswarm plot showing global feature impact for high-risk burnout prediction.}
+\label{fig:shap_highrisk_beeswarm}
+\end{figure}
+
+Figure~\ref{fig:shap_highrisk_beeswarm} presents the SHAP beeswarm plot for high-risk burnout prediction. The plot shows that stress level, dropout risk, combined distress index, academic resilience, and anxiety-pressure impact have the strongest influence on high-risk classification. Higher feature values generally push predictions toward the high-risk class, while sleep hours and social support show protective effects by reducing high-risk prediction impact.
+
+These findings align with the EDA results and validate the importance of both behavioral and socio-economic factors in determining burnout risk.
+
+\subsection{Feature Importance and Prediction Confidence}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{figures/feature_importance.jpeg}
+\caption{XGBoost feature importance ranking for burnout risk classification.}
+\label{fig:feature_importance}
+\end{figure}
+
+Figure~\ref{fig:feature_importance} ranks the most influential predictors used by the XGBoost model. Combined distress index, stress level, depression score, anxiety-pressure impact, study-sleep gap, and academic resilience appear among the most important features, confirming that burnout risk is driven by both psychological and behavioral factors.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{figures/probability_distribution.jpeg}
+\caption{Predicted probability distributions by actual burnout risk category.}
+\label{fig:probability_distribution}
+\end{figure}
+
+Figure~\ref{fig:probability_distribution} shows the distribution of predicted class probabilities across actual risk groups. Clearer separation in probability distributions indicates stronger confidence in the model's classification decisions.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{figures/risk_heatmap.jpeg}
+\caption{Predicted high-risk probability by sleep and study-hour bands.}
+\label{fig:risk_heatmap}
+\end{figure}
+
+Figure~\ref{fig:risk_heatmap} translates model predictions into an interpretable behavioral pattern. The highest predicted high-risk probability occurs when students report very low sleep and high study hours, supporting the project’s central finding that burnout risk emerges from combined stress and recovery imbalance.
+
+\subsection{Key Insights from Machine Learning}
+
+\begin{itemize}
+    \item Stress level, combined distress, dropout risk, and academic resilience are major predictors of high-risk burnout.
+    \item Sleep imbalance and high study workload significantly increase predicted high-risk probability.
+    \item Engineered features such as combined distress index, anxiety-pressure impact, study-sleep gap, and academic resilience improve interpretability.
+    \item ROC, precision-recall, confusion matrix, and probability-distribution plots provide visual evidence of strong model performance.
+    \item SHAP analysis enhances transparency by explaining how individual features push predictions toward or away from high-risk burnout.
+\end{itemize}
+
+\section{Dashboard Design and Insights}
+
+To translate analytical results into actionable insights, multiple dashboard systems were developed using Power BI~\cite{powerbi} and Streamlit~\cite{streamlit}. These dashboards provide both macro-level monitoring and individual-level decision support.
+
+\subsection{Power BI Executive Dashboard}
+
+The Power BI dashboard was designed for institutional-level analysis and reporting. It integrates model predictions and key features to provide a high-level overview of burnout risk across the student population.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{figures/powerbi_overview.png}
+\caption{Power BI executive dashboard showing burnout risk distribution and predictive insights.}
+\label{fig:powerbi_overview}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{figures/powerbi_diagnostics.jpeg}
+\caption{Power BI diagnostic dashboard illustrating non-linear burnout tipping points and feature interactions.}
+\label{fig:powerbi_diagnostics}
+\end{figure}
+
+The dashboard includes key components such as:
+\begin{itemize}
+    \item Burnout risk distribution across the population
+    \item Actual vs predicted risk comparison
+    \item Non-linear performance threshold analysis
+\end{itemize}
+
+These visualizations enable decision-makers to identify high-risk segments and understand underlying drivers.
+
+\subsection{Streamlit Real-Time Risk Simulator}
+
+A Streamlit-based web application was developed as a self-learning tool to provide real-time burnout risk assessment.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{figures/streamlit_highrisk.jpeg}
+\caption{Streamlit application showing high-risk burnout prediction scenario.}
+\label{fig:streamlit_highrisk}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{figures/streamlit_moderate.jpeg}
+\caption{Streamlit application showing moderate-risk scenario.}
+\label{fig:streamlit_moderate}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{figures/streamlit_stable.jpeg}
+\caption{Streamlit application showing stable well-being scenario.}
+\label{fig:streamlit_stable}
+\end{figure}
+
+The application allows users to input key variables such as exam pressure, sleep duration, and financial stress. It then computes a burnout risk score and categorizes the student into risk levels.
+
+Key features include:
+\begin{itemize}
+    \item Real-time risk scoring using model-inspired logic
+    \item Interactive visual gauge for risk interpretation
+    \item Comparison with global population benchmarks
+    \item Actionable recommendations based on risk level
+\end{itemize}
+
+This tool demonstrates how predictive analytics can be operationalized into real-world decision-support systems.
+
+\section{Conclusion and Future Work}
+
+This project developed a scalable, GPU-accelerated, and explainable analytics system for predicting student burnout risk using a large-scale dataset of 1,000,000 records. By integrating data engineering, machine learning, and multi-platform visualization, the system demonstrates how advanced analytics can be applied to real-world mental health challenges.
+
+The use of NVIDIA RAPIDS enabled efficient processing of large datasets, achieving a 21.67x speedup over traditional CPU-based workflows. Feature engineering played a critical role in capturing non-linear relationships between academic workload, sleep patterns, and psychological stress factors. The XGBoost model effectively classified burnout risk levels, while SHAP explainability provided transparency into feature importance and model behavior.
+
+The integration of Power BI dashboards and a Streamlit-based simulation tool further extends the impact of this project by translating predictive outputs into actionable decision-support systems. These tools allow both macro-level monitoring and individual-level risk assessment, making the solution applicable in institutional settings.
+
+However, the study has limitations. The dataset may contain strong synthetic or structured relationships that contribute to unusually high predictive accuracy, which may not generalize to real-world populations. Future work should focus on validating the model using real-world student data and exploring additional modeling approaches such as deep learning or temporal analysis.
+
+Overall, this project demonstrates the effectiveness of combining scalable computing, explainable AI, and interactive visualization to address complex behavioral and mental health problems.
+
+\section*{Acknowledgment}
+
+\section*{AI Use Acknowledgment}
+
+Artificial intelligence tools were used to assist in structuring, refining, and editing sections of this report. All technical content, analysis, code implementation, and visualizations were developed by the project team. The use of AI was limited to language refinement and formatting support.
+
+\appendices
+\section{Collaboration Evidence}
+
+This appendix provides evidence of collaborative work conducted throughout the project lifecycle using Overleaf and GitHub.
+
+\subsection{Overleaf Collaboration}
+
+Screenshots of the Overleaf version history, edit contributions, and revision timeline will be included here. These demonstrate that multiple team members contributed to the writing, editing, and structuring of the report.
+
+\subsection{GitHub Contribution History}
+
+Screenshots of the GitHub repository commit history and contributor activity will be included here. These illustrate distributed contributions across data engineering, machine learning, and visualization components.
+
+\subsection{Project Development Timeline}
+
+The combination of Overleaf and GitHub activity logs provides a comprehensive view of the project’s iterative development process from initial EDA to final deployment.
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\end{document}
